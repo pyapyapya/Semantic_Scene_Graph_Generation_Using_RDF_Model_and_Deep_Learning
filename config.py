@@ -1,6 +1,7 @@
 import os
 
-main_path = 'C:\dataset\\VRD\\json_dataset'
+main_path = './data/json_dataset'
+image_path = './data/sg_dataset'
 path = {
     # VRD DataSet
     'objects_path': os.path.join(main_path, 'objects.json'),
@@ -9,8 +10,8 @@ path = {
     'json_test_dataset_path': os.path.join(main_path, 'annotations_test.json'),
     # 'json_train_dataset_path': os.path.join('C:\dataset\\vrd\json_dataset\sg_dataset', 'sg_train_annotations.json'),
     # 'json_test_dataset_path': os.path.join('C:\dataset\\vrd\json_dataset\sg_dataset', 'sg_test_annotations.json'),
-    'train_image_path': os.path.join('C:\dataset\\vrd\json_dataset\sg_dataset', 'sg_train_images'),
-    'val_image_path': os.path.join('C:\dataset\\vrd\json_dataset\sg_dataset', 'sg_test_images'),
+    'train_image_path': os.path.join(image_path, 'sg_train_images'),
+    'val_image_path': os.path.join(image_path, 'sg_test_images'),
 
     # Make User DataSet
     'spo_train_path': os.path.join(main_path, 'spo_train.txt'),
@@ -20,5 +21,5 @@ path = {
     'test_two_tag_path': os.path.join(main_path, 'test_two_tag.pkl'),
 
     # Load DataSet
-    'numberbatch_path': 'E:\ADD\ADD\\numberbatch-en.txt'
+    'numberbatch_path': os.path.join(main_path, './numberbatch-en-17.02.txt')
 }

@@ -9,7 +9,6 @@ import torch
 import matplotlib.pyplot as plt
 import rdflib
 import networkx as nx
-
 from torch import nn, save, Tensor, LongTensor, FloatTensor
 from torch.optim import Adam
 from torch.optim.lr_scheduler import StepLR

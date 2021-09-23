@@ -14,14 +14,11 @@ from torch.optim.lr_scheduler import StepLR
 from torchvision import transforms
 from sklearn.metrics import classification_report, precision_score, recall_score, f1_score
 
-from VRD.config import path
-from VRD.model import CNN
-from VRD.data_loader import get_dataloader
-from VRD.util import load_json
+from config import path
+from model import CNN
+from data_loader import get_dataloader
+from util import load_json
 
-
-def crop_image():
-    
 
 def cnn_only_train(args, data_loader, vocab):
     device = torch.device('cuda')

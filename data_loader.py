@@ -9,9 +9,10 @@ from torch import tensor, zeros, stack
 from torch import Tensor
 from torch.utils.data import Dataset, DataLoader, random_split
 
-from VRD import config
-from VRD.util import load_image, make_transform, load_json
-from VRD.vrd_preprocess import TwoTag
+import config
+from util import load_image, make_transform, load_json
+from vrd_preprocess import TwoTag
+
 
 class VRDDataset(Dataset):
     def __init__(self, json_file: json, image_path: str):
@@ -36,8 +37,7 @@ class VRDDataset(Dataset):
         image_id = self.image_id_list[idx]
         n_spo = len(self.spo_list[idx])
         label: np.array = np.zeros((n_spo, 3))
-        target: Tensor = torch.zeros(len(self.vocab))
-
+        target: np.array = np.zeros(len(self.vocab))
         image = Image.open(os.path.join(self.image_path, image_id)).convert('RGB')
         if self.transform is not None:
             image = self.transform(image)
@@ -51,8 +51,7 @@ class VRDDataset(Dataset):
             label[spo_idx, 2] = spo[2]
             target[spo[0]] = 1
             target[spo[1]] = 1
-        label = Tensor(label)
-
+        label = Tensor(target)
         return image, label
 
     def make_dataset(self):
@@ -80,27 +79,29 @@ def scene_graph_collate_fn(data):
     batch_size = len(labels)
 
     length = [label.shape[0] for label in labels]
-    print(max(length))
     targets = zeros(batch_size, max(length), 3).long()
-    print(targets.shape)
     for batch_idx, label in enumerate(labels):
         for i, line in enumerate(label):
             targets[batch_idx, i] = line
-    return images, targets, length
+    return images, targets
 
 
 def get_dataloader(args):
     train_path = config.path['json_train_dataset_path']
     train_image_path = config.path['train_image_path']
+    test_path = config.path['json_test_dataset_path']
+    test_image_path = config.path['val_image_path']
     json_train: json = load_json(train_path)
+    json_test: json = load_json(test_path)
     train_dataset = VRDDataset(json_file=json_train, image_path=train_image_path)
+    test_dataset = VRDDataset(json_file=json_test, image_path=test_image_path)
+
     n_data = len(train_dataset)
-    train_dataset, test_dataset = random_split(train_dataset, [500, n_data-500])
+    # train_dataset, test_dataset = random_split(dataset, [500, n_data-500])
 
     train_data_loader = DataLoader(dataset=train_dataset, batch_size=args.batch_size,
                                    shuffle=True, num_workers=args.num_workers)
-    test_dataloader = DataLoader(dataset=test_dataset, batch_size=1,
-                                 shuffle=True, num_workers=args.num_workers)
+    test_dataloader = DataLoader(dataset=test_dataset, batch_size=1, num_workers=args.num_workers)
 
     # test_path = config.path['test_two_tag_path']
     # test_image_path = config.path['val_image_path']

@@ -7,28 +7,29 @@ from typing import List
 
 import torch
 import matplotlib.pyplot as plt
-from torch import nn, save
+from torch import nn, save, Tensor
 from torch.nn.utils.rnn import pack_padded_sequence
-from torch.optim import Adam
-from torch.optim.lr_scheduler import StepLR
+from torch.optim import Adam, SGD
+from torch.optim.lr_scheduler import StepLR, ExponentialLR
 from torchvision import transforms
 from sklearn.metrics import classification_report, precision_score, recall_score, f1_score
 
-from VRD.config import path
-from VRD.model import CNN
-from VRD.data_loader import get_dataloader
-from VRD.util import load_json
+from config import path
+from model import CNN
+from data_loader import get_dataloader
+from util import load_json
 
 
 def cnn_only_train(args, data_loader, vocab):
     device = torch.device('cuda')
 
     encoder = CNN(vocab).to(device)
-
     criterion = nn.BCEWithLogitsLoss()
     params = list(encoder.parameters())
-    optim = Adam(params, lr=args.learning_rate, betas=(0.9, 0.99), eps=1e-8, weight_decay=1e-5)
-    lr_schedular = StepLR(optim, step_size=10, gamma=0.05)
+    # optim = Adam(params, lr=args.learning_rate, betas=(0.9, 0.99), eps=1e-8, weight_decay=1e-5)
+    optim = SGD(params, lr=args.learning_rate, momentum=0.9)
+    # lr_schedular = StepLR(optim, step_size=7, gamma=0.05)
+    lr_schedular = ExponentialLR(optim, gamma=0.99)
 
     epoch_list = []
     loss_lst = []
@@ -67,8 +68,8 @@ def cnn_only_test(args, vocab, data_loader):
 
     n_label = len(vocab)
     target_name = list(vocab)
-    label_list = np.zeros((len(data_loader), 17))
-    pred_list = np.zeros((len(data_loader), 17))
+    label_list = np.zeros((len(data_loader), n_label))
+    pred_list = np.zeros((len(data_loader), n_label))
 
     for i, (image, label) in enumerate(data_loader):
         image = image.to(device)
@@ -122,7 +123,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    n_train = '3'
+    n_train = '0'
     parser = argparse.ArgumentParser()
 
     # Load Path
@@ -130,14 +131,13 @@ if __name__ == '__main__':
 
     # Save path
     parser.add_argument('--encoder_path', type=str, default='models/encoder' + n_train + '.pth')
-    parser.add_argument('--decoder_path', type=str, default='models/decoder' + n_train + '.pth')
     parser.add_argument('--loss_path', type=str, default='models/cnn_loss_graph' + n_train + '.png')
     parser.add_argument('--precision_path', type=str, default='models/cnn_precision_graph' + n_train + '.png')
     parser.add_argument('--recall_path', type=str, default='models/cnn_recall_graph' + n_train + '.png')
     parser.add_argument('--f1_score_path', type=str, default='models/cnn_f1_score_graph' + n_train + '.png')
 
     # Training HyperParameters
-    parser.add_argument('--epochs', type=int, default=30)
+    parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--num_workers', type=int, default=8)
     parser.add_argument('--learning_rate', type=float, default=0.005)

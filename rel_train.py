@@ -10,11 +10,11 @@ from torch.optim import Adam
 from torch.optim.lr_scheduler import StepLR
 from sklearn.metrics import classification_report, precision_score, recall_score, f1_score
 
-from VRD.config import path
-from VRD.vrd_preprocess import TwoTag
-from VRD.model import RNNRelationModel
-from VRD.data_loader import get_dataloader
-from VRD.util import load_json, load_pkl, load_tag_representation, load_spo_list
+from config import path
+from vrd_preprocess import TwoTag
+from model import RNNRelationModel
+from data_loader import get_dataloader
+from util import load_json, load_pkl, load_tag_representation, load_spo_list
 
 
 def get_tag_representation(spo_list, rel, tag_representation, tag1, tag2, idx):
@@ -190,22 +190,23 @@ def main(args):
     train_dataloader, test_dataloader = get_dataloader(args=args)
 
     print(len(rel))
-
+    print('spo_train_list', len(spo_train_list))
+    print('spo_test_list', len(spo_test_list))
     tag_relation_model_train(args=args, data_loader=train_dataloader, spo_list=spo_train_list,
                              tag_representation=tag_representation, vocab=vocab, rel=rel, two_tag=train_two_tag)
     test_rdf(args=args, data_loader=test_dataloader, spo_list=spo_train_list,
-             tag_representation=tag_representation, vocab=vocab, rel=rel, two_tag=train_two_tag)
+             tag_representation=tag_representation, vocab=vocab, rel=rel, two_tag=test_two_tag)
 
 
 if __name__ == '__main__':
-    n_train = '10'
+    n_train = '0'
     parser = argparse.ArgumentParser()
 
     # Load Path
     parser.add_argument('--model_path', type=str, default='models/', help='path for saving trained model')
 
     # Save path
-    parser.add_argument('--encoder_path', type=str, default='E:\\untitled3\VRD\models\encoder' + '9' + '.pth')
+    parser.add_argument('--encoder_path', type=str, default='models/encoder' + n_train + '.pth')
     parser.add_argument('--decoder_path', type=str, default='models/decoder' + n_train + '.pth')
     parser.add_argument('--loss_path', type=str, default='models/loss_graph' + n_train + '.png')
     parser.add_argument('--precision_path', type=str, default='models/precision_graph' + n_train + '.png')

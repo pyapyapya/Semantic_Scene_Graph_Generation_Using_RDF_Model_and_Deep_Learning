@@ -3,7 +3,7 @@ from typing import List, Dict
 
 import numpy as np
 
-from VRD import config
+import config
 
 
 class CheckDataset:

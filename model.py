@@ -1,11 +1,11 @@
 from torch import nn, cat, stack, sigmoid, Tensor, LongTensor, FloatTensor
-from torchvision.models import resnet50, resnet101
+from torchvision.models import resnet34, resnet50
 
 
 class CNN(nn.Module):
     def __init__(self, vocab):
         super().__init__()
-        resnet = resnet50(pretrained=True)
+        resnet = resnet34(pretrained=True)
         module = list(resnet.children())[:-1]
         num_fts = resnet.fc.in_features
         resnet.fc = nn.Linear(num_fts, len(vocab))
@@ -16,7 +16,6 @@ class CNN(nn.Module):
     def forward(self, image):
         features = self.resnet(image)
         features = features.reshape(features.size(0), -1)
-        # features = self.bn(features)
         features = self.bn(self.linear(features))
         return features
 

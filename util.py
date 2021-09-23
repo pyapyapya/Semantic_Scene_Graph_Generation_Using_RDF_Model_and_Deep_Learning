@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 from torchvision import transforms
 
-from VRD.config import path
+from config import path
 
 
 def load_image(image_path, transform=None):

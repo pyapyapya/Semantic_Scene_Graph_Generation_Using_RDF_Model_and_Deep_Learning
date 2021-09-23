@@ -2,8 +2,8 @@ import os
 import pickle
 from typing import List, Dict
 
-from VRD.check_vrd_dataset import CheckTrainSet, CheckTestSet, delete_overlap_train_set
-from VRD import config
+from check_vrd_dataset import CheckTrainSet, CheckTestSet, delete_overlap_train_set
+import config
 
 
 class TwoTag:
@@ -45,7 +45,7 @@ class Preprocess:
         save_file_name = os.path.join(self.main_path, file_name)
         with open(config.path['numberbatch_path'], 'rt', encoding='UTF-8-sig') as numberbatch_file:
             with open(save_file_name, 'wt', encoding='UTF-8') as tag_representation_file:
-                for line in numberbatch_file.readlines():
+                for line in numberbatch_file.readlines()[1:]:
                     object_name: str = line.split()[0]
                     if object_name in self.objects_list:
                         tag_representation_file.write(line)
@@ -80,7 +80,7 @@ class Preprocess:
             pickle.dump(two_tag, pkl)
 
     def file_process(self):
-        # self.get_tag_representation('tag_representation.txt')
+        self.get_tag_representation('tag_representation.txt')
         train_two_tag = self.make_spo(self.train_spo_dict, 'spo_train.txt')
         test_two_tag = self.make_spo(self.test_spo_dict, 'spo_test.txt')
         self.make_pkl(train_two_tag, 'train_two_tag.pkl')
