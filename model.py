@@ -66,11 +66,3 @@ class RNNRelationModel(nn.Module):
         return sampled_id
 
 
-class FCRelationModel(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.linear = nn.Linear(19, 6)
-
-    def forward(self, tag) -> Tensor:
-        relation = self.linear(tag)
-        return relation
